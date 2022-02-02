@@ -1,0 +1,11 @@
+        file_name = os.path.join(self.getId(), file_name + extension)
+
+        try:
+            Logger.log("d", "Writing to %s", file_name)
+========================================
+        file_name = os.path.join(self.getId(), file_name + extension)
+        self._performWrite(file_name, preferred_format, writer, nodes)
+
+    def _performWrite(self, file_name, preferred_format, writer, nodes):
+        try:
+            Logger.log("d", "Writing to %s", file_name)

@@ -1,0 +1,9 @@
+                raise OutputDeviceError.UserCanceledError()
+
+        # Actually writing file
+========================================
+                raise OutputDeviceError.UserCanceledError()
+        self._performWrite(file_name, selected_type, file_handler, nodes)
+
+    def _performWrite(self, file_name, selected_type, file_handler, nodes):
+        # Actually writing file

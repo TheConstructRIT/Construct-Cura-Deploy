@@ -1,0 +1,8 @@
+# Project specific
+download/
+
+# PyCharm
+.idea/
+
+# Python
+__pycache__/
