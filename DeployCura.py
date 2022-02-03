@@ -13,10 +13,7 @@ import re
 import requests
 import zipfile
 from typing import Optional
-
-
-KNOWN_CURA_LOCATIONS = ["C:/Program Files/"]
-SERVER_HOST = "https://hack.rit.edu:7000"
+from Configuration import KNOWN_CURA_LOCATIONS, SERVER_HOST
 
 
 def downloadArchive(url, name) -> None:

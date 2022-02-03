@@ -7,38 +7,7 @@ Patches files in Cura. May need to be run as admin.
 import json
 import os
 import shutil
-import DeployCura
-
-
-WHITELISTED_PRINTER_DEFINITIONS = {
-    # Abstract
-    "fdmextruder.def.json",
-    "fdmprinter.def.json",
-    "artillery_base.def.json",
-
-    # Printers
-    "prusa_i3_mk3.def.json",
-    "flashforgecreatorpro.def.json",
-    "artillery_sidewinder_x1.def.json",
-}
-PRINTER_OVERRIDES = {
-    "prusa_i3_mk3.def.json": {
-        "adhesion_type": { "default_value": "brim" },
-        "support_enable": { "default_value": True },
-        "infill_sparse_density": { "default_value": 15 },
-        "raft_margin": { "default_value": 5 },
-    },
-    "artillery_base.def.json": {
-        "adhesion_type": { "default_value": "raft" },
-        "support_enable": { "default_value": True },
-        "infill_sparse_density": { "default_value": 15 },
-        "raft_margin": { "default_value": 5 },
-        "support_infill_rate": { "value": "0 if support_enable and support_structure == 'tree' else 15" },
-        "support_use_towers": { "value": True },
-        "support_wall_count": { "value": 0 },
-        "support_brim_enable": { "value": False },
-    },
-}
+from Configuration import WHITELISTED_PRINTER_DEFINITIONS, PRINTER_OVERRIDES, KNOWN_CURA_LOCATIONS
 
 
 def applyPatch(targetDirectory: str, patchFile: str) -> None:
@@ -155,7 +124,7 @@ def patchCuraInstalls() -> None:
     """Patches all installs of Cura installed to the known locations.
     """
 
-    for knownLocation in DeployCura.KNOWN_CURA_LOCATIONS:
+    for knownLocation in KNOWN_CURA_LOCATIONS:
         if os.path.isdir(knownLocation):
             for directory in os.listdir(knownLocation):
                 if "ultimaker cura" in directory.lower():
