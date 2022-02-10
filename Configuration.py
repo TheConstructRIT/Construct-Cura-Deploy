@@ -10,19 +10,6 @@ KNOWN_CURA_LOCATIONS = ["C:/Program Files/"]
 # Host for the server.
 SERVER_HOST = "https://hack.rit.edu:7000"
 
-# Printers that are allowed to be used.
-WHITELISTED_PRINTER_DEFINITIONS = {
-    # Abstract
-    "fdmextruder.def.json",
-    "fdmprinter.def.json",
-    "artillery_base.def.json",
-
-    # Printers
-    "prusa_i3_mk3.def.json",
-    "flashforgecreatorpro.def.json",
-    "artillery_sidewinder_x1.def.json",
-}
-
 # Modifications made to the printer profiles.
 PRINTER_OVERRIDES = {
     "prusa_i3_mk3.def.json": {

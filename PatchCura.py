@@ -7,7 +7,7 @@ Patches files in Cura. May need to be run as admin.
 import json
 import os
 import shutil
-from Configuration import WHITELISTED_PRINTER_DEFINITIONS, PRINTER_OVERRIDES, KNOWN_CURA_LOCATIONS
+from Configuration import PRINTER_OVERRIDES, KNOWN_CURA_LOCATIONS
 
 
 def applyPatch(targetDirectory: str, patchFile: str) -> None:
@@ -82,13 +82,8 @@ def patchCuraPrinters(curaDirectory: str) -> None:
     :param curaDirectory: Directory of Cura to patch.
     """
 
-    # Remove the non-whitelisted printers.
-    definitionsDirectory = os.path.join(curaDirectory, "resources", "definitions")
-    for fileName in os.listdir(definitionsDirectory):
-        if fileName not in WHITELISTED_PRINTER_DEFINITIONS:
-            os.remove(os.path.join(definitionsDirectory, fileName))
-
     # Apply the additional overrides.
+    definitionsDirectory = os.path.join(curaDirectory, "resources", "definitions")
     for fileName in PRINTER_OVERRIDES.keys():
         if fileName in PRINTER_OVERRIDES.keys():
             # Read the file JSON.
