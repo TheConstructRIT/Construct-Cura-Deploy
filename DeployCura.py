@@ -13,7 +13,7 @@ import re
 import requests
 import zipfile
 from typing import Optional
-from Configuration import KNOWN_CURA_LOCATIONS, SERVER_HOST, MATERIAL_OVERRIDES
+from Configuration import KNOWN_CURA_LOCATIONS, SERVER_HOST, PRINTER_OVERRIDES, MATERIAL_OVERRIDES
 
 
 def downloadArchive(url, name) -> None:
@@ -108,6 +108,26 @@ def deploySettings() -> None:
             configurationFileLines.append(line)
     with open(configurationFile, "w") as file:
         file.writelines(configurationFileLines)
+
+    # Copy and modify the printers.
+    settingsDefinitionsDirectory = os.path.join(targetSettings, "definitions")
+    globalDefinitionsDirectory = os.path.join(latestCuraDirectory, "resources", "definitions")
+    if not os.path.exists(settingsDefinitionsDirectory):
+        os.makedirs(settingsDefinitionsDirectory)
+    for fileName in PRINTER_OVERRIDES.keys():
+        if fileName in PRINTER_OVERRIDES.keys():
+            # Read the file JSON.
+            filePath = os.path.join(globalDefinitionsDirectory, fileName)
+            with open(filePath, encoding="utf-8") as file:
+                definition = json.loads(file.read())
+
+            # Set the overrides.
+            for overrideName in PRINTER_OVERRIDES[fileName]:
+                definition["overrides"][overrideName] = PRINTER_OVERRIDES[fileName][overrideName]
+
+            # Save the file.
+            with open(os.path.join(settingsDefinitionsDirectory, fileName), "w", encoding="utf-8") as file:
+                file.write(json.dumps(definition, indent=4))
 
     # Copy and modify the materials.
     settingsMaterialsDirectory = os.path.join(targetSettings, "materials")

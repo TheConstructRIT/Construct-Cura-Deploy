@@ -4,10 +4,9 @@ Zachary Cook
 Patches files in Cura. May need to be run as admin.
 """
 
-import json
 import os
 import shutil
-from Configuration import PRINTER_OVERRIDES, KNOWN_CURA_LOCATIONS
+from Configuration import KNOWN_CURA_LOCATIONS
 
 
 def applyPatch(targetDirectory: str, patchFile: str) -> None:
@@ -76,39 +75,11 @@ def patchDirectory(targetFileOrDirectory: str, sourceFileOrDirectory: str) -> No
             shutil.copy(sourceFileOrDirectory, targetFileOrDirectory)
 
 
-def patchCuraPrinters(curaDirectory: str) -> None:
-    """Patches the printers of a Cura install.
-
-    :param curaDirectory: Directory of Cura to patch.
-    """
-
-    # Apply the additional overrides.
-    definitionsDirectory = os.path.join(curaDirectory, "resources", "definitions")
-    for fileName in PRINTER_OVERRIDES.keys():
-        if fileName in PRINTER_OVERRIDES.keys():
-            # Read the file JSON.
-            filePath = os.path.join(definitionsDirectory, fileName)
-            with open(filePath, encoding="utf-8") as file:
-                definition = json.loads(file.read())
-
-            # Set the overrides.
-            for overrideName in PRINTER_OVERRIDES[fileName]:
-                definition["overrides"][overrideName] = PRINTER_OVERRIDES[fileName][overrideName]
-
-            # Save the file.
-            os.remove(filePath)
-            with open(filePath, "w", encoding="utf-8") as file:
-                file.write(json.dumps(definition, indent=4))
-
-
 def patchCuraInstall(curaDirectory: str) -> None:
     """Patches an install of Cura.
 
     :param curaDirectory: Directory of Cura to patch.
     """
-
-    # Patch the printers.
-    patchCuraPrinters(curaDirectory)
 
     # Apply the patch files.
     patchesDirectory = os.path.realpath(os.path.join(__file__, "..", "patches"))
