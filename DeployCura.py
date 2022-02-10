@@ -13,7 +13,7 @@ import re
 import requests
 import zipfile
 from typing import Optional
-from Configuration import KNOWN_CURA_LOCATIONS, SERVER_HOST
+from Configuration import KNOWN_CURA_LOCATIONS, SERVER_HOST, MATERIAL_OVERRIDES
 
 
 def downloadArchive(url, name) -> None:
@@ -47,8 +47,14 @@ def patchCura() -> None:
     ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, "PatchCura.py", None, 1)
 
 
-def getLatestCuraVersion() -> (Optional[str], Optional[int]):
+def getLatestCuraVersion() -> (Optional[str], Optional[str], Optional[int]):
+    """Gets the latest installed Cura version.
+
+    :return: The directory of the install, the full version of the install, and the minor version of the install.
+    """
+
     # Iterate over the installs to find the latest version.
+    latestCuraDirectory = None
     latestFullVersion = None
     latestMinorVersion = None
     for knownParent in KNOWN_CURA_LOCATIONS:
@@ -58,11 +64,12 @@ def getLatestCuraVersion() -> (Optional[str], Optional[int]):
                     versionParts = re.findall(r"\d+", curaDirectory)
                     minorVersion = float(versionParts[0] + "." + versionParts[1])
                     if latestMinorVersion is None or minorVersion > latestMinorVersion:
+                        latestCuraDirectory = os.path.join(knownParent, curaDirectory)
                         latestMinorVersion = minorVersion
                         latestFullVersion = ".".join(versionParts)
 
     # Return the latest full and minor versions.
-    return latestFullVersion, latestMinorVersion
+    return latestCuraDirectory, latestFullVersion, latestMinorVersion
 
 
 def deploySettings() -> None:
@@ -70,7 +77,7 @@ def deploySettings() -> None:
     """
 
     # Get the latest installed version.
-    latestFullVersion, latestMinorVersion = getLatestCuraVersion()
+    latestCuraDirectory, latestFullVersion, latestMinorVersion = getLatestCuraVersion()
     if latestFullVersion is None:
         raise Exception("Failed to detect an install of Cura.")
 
@@ -101,6 +108,29 @@ def deploySettings() -> None:
             configurationFileLines.append(line)
     with open(configurationFile, "w") as file:
         file.writelines(configurationFileLines)
+
+    # Copy and modify the materials.
+    settingsMaterialsDirectory = os.path.join(targetSettings, "materials")
+    globalMaterialsDirectory = os.path.join(latestCuraDirectory, "resources", "materials")
+    if not os.path.exists(settingsMaterialsDirectory):
+        os.makedirs(settingsMaterialsDirectory)
+    for materialFileName in MATERIAL_OVERRIDES:
+        # Read the initial file.
+        import xml.etree.ElementTree as ElementTree
+        with open(os.path.join(globalMaterialsDirectory, materialFileName)) as file:
+            materialXml = ElementTree.fromstring(file.read())
+
+        # Apply the modifications.
+        for settingName in MATERIAL_OVERRIDES[materialFileName].keys():
+            for child in materialXml:
+                if "settings" in child.tag:
+                    for childSetting in child:
+                        if "key" in childSetting.attrib.keys() and childSetting.attrib["key"] == settingName:
+                           childSetting.text = str(MATERIAL_OVERRIDES[materialFileName][settingName])
+
+        # Save the changes.
+        with open(os.path.join(settingsMaterialsDirectory, materialFileName), "bw") as file:
+            file.write(ElementTree.tostring(materialXml, encoding='utf8', method='xml'))
 
     # Download and copy the X3G plugin.
     downloadArchive("https://github.com/Ghostkeeper/X3GWriter/releases/download/v1.1.12/X3GWriter7.0.0.curapackage", "X3GWriter")

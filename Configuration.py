@@ -42,3 +42,10 @@ PRINTER_OVERRIDES = {
         "support_brim_enable": { "value": False },
     },
 }
+
+# Modifications made to the material profiles.
+MATERIAL_OVERRIDES = {
+    "generic_pla_175.xml.fdm_material": {
+        "print temperature": 210,
+    }
+}
