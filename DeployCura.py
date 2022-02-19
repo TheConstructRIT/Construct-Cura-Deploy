@@ -12,11 +12,11 @@ import sys
 import re
 import requests
 import zipfile
-from typing import Optional
+from typing import Optional, Tuple
 from Configuration import KNOWN_CURA_LOCATIONS, SERVER_HOST, PRINTER_OVERRIDES, MATERIAL_OVERRIDES
 
 
-def downloadArchive(url, name) -> None:
+def downloadArchive(url: str, name: str) -> None:
     """Downloads and extracts an archive.
 
     :param url: URL to download from.
@@ -47,7 +47,7 @@ def patchCura() -> None:
     ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, "PatchCura.py", None, 1)
 
 
-def getLatestCuraVersion() -> (Optional[str], Optional[str], Optional[int]):
+def getLatestCuraVersion() -> Tuple[Optional[str], Optional[str], Optional[int]]:
     """Gets the latest installed Cura version.
 
     :return: The directory of the install, the full version of the install, and the minor version of the install.
