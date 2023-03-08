@@ -111,7 +111,7 @@ def deploySettings() -> None:
 
     # Copy and modify the printers.
     settingsDefinitionsDirectory = os.path.join(targetSettings, "definitions")
-    globalDefinitionsDirectory = os.path.join(latestCuraDirectory, "resources", "definitions")
+    globalDefinitionsDirectory = os.path.join(latestCuraDirectory,"share","cura","resources", "definitions")
     if not os.path.exists(settingsDefinitionsDirectory):
         os.makedirs(settingsDefinitionsDirectory)
     for fileName in PRINTER_OVERRIDES.keys():
@@ -131,7 +131,7 @@ def deploySettings() -> None:
 
     # Copy and modify the materials.
     settingsMaterialsDirectory = os.path.join(targetSettings, "materials")
-    globalMaterialsDirectory = os.path.join(latestCuraDirectory, "resources", "materials")
+    globalMaterialsDirectory = os.path.join(latestCuraDirectory,"share","cura","resources", "materials")
     if not os.path.exists(settingsMaterialsDirectory):
         os.makedirs(settingsMaterialsDirectory)
     for materialFileName in MATERIAL_OVERRIDES:
